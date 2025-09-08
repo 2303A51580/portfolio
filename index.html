@@ -1,10 +1,201 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>My Portfolio</title>
+  <meta charset="UTF-8">
+  <title>Singleton Pattern - All Apps</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fa;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      text-align: center;
+      padding: 20px;
+      background: #004d40;
+      color: white;
+      margin: 0;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #00796b;
+    }
+    nav button {
+      padding: 14px 20px;
+      margin: 0;
+      border: none;
+      background: #00796b;
+      color: white;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    nav button:hover, nav button.active {
+      background: #004d40;
+    }
+    .section {
+      display: none;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    button.action {
+      background: #00796b;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      margin: 5px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button.action:hover {
+      background: #004d40;
+    }
+    .log {
+      background: #f9f9f9;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-family: monospace;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
-    <h1>Welcome to My Portfolio</h1>
-    <p>This is my about section.</p>
-    <a href="project.html">View My Projects</a>
+  <h1>🛠 Singleton Pattern - All Apps</h1>
+  <nav>
+    <button class="tab active" onclick="showSection('food')">🍔 Food Delivery</button>
+    <button class="tab" onclick="showSection('bank')">🏦 Banking</button>
+    <button class="tab" onclick="showSection('cart')">🛒 E-commerce</button>
+    <button class="tab" onclick="showSection('ride')">🚖 Ride-Hailing</button>
+  </nav>
+
+  <!-- Food Delivery -->
+  <div id="food" class="section" style="display:block;">
+    <div class="card">
+      <h2>Food Delivery - AppConfig Singleton</h2>
+      <button class="action" onclick="createConfig1()">Create Config #1</button>
+      <button class="action" onclick="createConfig2()">Create Config #2</button>
+      <button class="action" onclick="checkSameConfig()">Check If Same Config</button>
+      <div class="log" id="foodLog"></div>
+    </div>
+  </div>
+
+  <!-- Banking -->
+  <div id="bank" class="section">
+    <div class="card">
+      <h2>Banking - BankServer Singleton</h2>
+      <button class="action" onclick="createServer1()">Create BankServer #1</button>
+      <button class="action" onclick="createServer2()">Create BankServer #2</button>
+      <button class="action" onclick="checkSameServer()">Check If Same Server</button>
+      <button class="action" onclick="deposit(1000)">Deposit ₹1000</button>
+      <button class="action" onclick="withdraw(500)">Withdraw ₹500</button>
+      <button class="action" onclick="showBalance()">Check Balance</button>
+      <div class="log" id="bankLog"></div>
+    </div>
+  </div>
+
+  <!-- E-commerce -->
+  <div id="cart" class="section">
+    <div class="card">
+      <h2>E-commerce - ShoppingCart Singleton</h2>
+      <button class="action" onclick="addItem('Shoes')">Add Shoes</button>
+      <button class="action" onclick="addItem('Shirt')">Add Shirt</button>
+      <button class="action" onclick="addItem('Laptop')">Add Laptop</button>
+      <button class="action" onclick="showCart()">Show Cart</button>
+      <div class="log" id="cartLog"></div>
+    </div>
+  </div>
+
+  <!-- Ride Hailing -->
+  <div id="ride" class="section">
+    <div class="card">
+      <h2>Ride-Hailing - RideManager Singleton</h2>
+      <button class="action" onclick="startRide('UserA','Airport')">Start Ride (UserA)</button>
+      <button class="action" onclick="startRide('UserB','Station')">Start Ride (UserB)</button>
+      <button class="action" onclick="endRide()">End Ride</button>
+      <button class="action" onclick="showRide()">Show Ride</button>
+      <div class="log" id="rideLog"></div>
+    </div>
+  </div>
+
+  <script>
+    // -------------------
+    // Tab Switching
+    // -------------------
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(s => s.style.display = "none");
+      document.getElementById(id).style.display = "block";
+      document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+      event.target.classList.add("active");
+    }
+
+    // -------------------
+    // Food Delivery Singleton
+    // -------------------
+    const AppConfig = (function() {
+      let instance;
+      function createInstance() {
+        return { currency:"INR", taxRate:0.18, discount:0.10, createdAt:new Date().toLocaleTimeString() };
+      }
+      return { getInstance:()=>instance||(instance=createInstance()) };
+    })();
+    function foodLog(msg){document.getElementById("foodLog").innerHTML+=msg+"<br>";}
+    function createConfig1(){foodLog("Config #1: "+JSON.stringify(AppConfig.getInstance()));}
+    function createConfig2(){foodLog("Config #2: "+JSON.stringify(AppConfig.getInstance()));}
+    function checkSameConfig(){let c1=AppConfig.getInstance(),c2=AppConfig.getInstance();foodLog("Same instance? "+(c1===c2));}
+
+    // -------------------
+    // Banking Singleton
+    // -------------------
+    const BankServer=(function(){let instance;function createInstance(){return{balance:0,createdAt:new Date().toLocaleTimeString(),
+      deposit:function(a){this.balance+=a;return "✅ Deposited ₹"+a+". Balance: ₹"+this.balance;},
+      withdraw:function(a){if(a>this.balance)return "❌ Insufficient funds!";this.balance-=a;return "💸 Withdrew ₹"+a+". Balance: ₹"+this.balance;},
+      getBalance:function(){return "📊 Balance: ₹"+this.balance;}
+    };}return{getInstance:()=>instance||(instance=createInstance())};})();
+    function bankLog(msg){document.getElementById("bankLog").innerHTML+=msg+"<br>";}
+    function createServer1(){bankLog("Server #1: "+JSON.stringify(BankServer.getInstance()));}
+    function createServer2(){bankLog("Server #2: "+JSON.stringify(BankServer.getInstance()));}
+    function checkSameServer(){let s1=BankServer.getInstance(),s2=BankServer.getInstance();bankLog("Same instance? "+(s1===s2));}
+    function deposit(a){bankLog(BankServer.getInstance().deposit(a));}
+    function withdraw(a){bankLog(BankServer.getInstance().withdraw(a));}
+    function showBalance(){bankLog(BankServer.getInstance().getBalance());}
+
+    // -------------------
+    // E-commerce Singleton
+    // -------------------
+    const ShoppingCart=(function(){let instance;function createInstance(){return{items:[],createdAt:new Date().toLocaleTimeString(),
+      add:function(i){this.items.push(i);return i+" added";},
+      show:function(){return this.items.length?this.items.join(", "):"Cart empty";}};}return{getInstance:()=>instance||(instance=createInstance())};})();
+    function cartLog(msg){document.getElementById("cartLog").innerHTML+=msg+"<br>";}
+    function addItem(item){cartLog(ShoppingCart.getInstance().add(item));}
+    function showCart(){cartLog("Cart: "+ShoppingCart.getInstance().show());}
+
+    // -------------------
+    // Ride-Hailing Singleton
+    // -------------------
+    const RideManager=(function(){let instance;function createInstance(){return{activeRide:null,createdAt:new Date().toLocaleTimeString(),
+      start:function(u,d){if(this.activeRide)return "❌ Ride already in progress for "+this.activeRide.user;
+        this.activeRide={user:u,destination:d};return "✅ Ride started for "+u+" to "+d;},
+      end:function(){if(!this.activeRide)return "No active rides";let r=this.activeRide;this.activeRide=null;return "🏁 Ride ended for "+r.user+" → "+r.destination;},
+      show:function(){return this.activeRide?"🚖 Active: "+this.activeRide.user+" → "+this.activeRide.destination:"No active rides";}};}
+      return{getInstance:()=>instance||(instance=createInstance())};})();
+    function rideLog(msg){document.getElementById("rideLog").innerHTML+=msg+"<br>";}
+    function startRide(u,d){rideLog(RideManager.getInstance().start(u,d));}
+    function endRide(){rideLog(RideManager.getInstance().end());}
+    function showRide(){rideLog(RideManager.getInstance().show());}
+  </script>
 </body>
 </html>
